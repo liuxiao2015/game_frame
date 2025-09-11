@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+  基于阿里巴巴 Java 开发规约的 Checkstyle 配置文件
+  参考：《阿里巴巴 Java 开发手册》
+  适配项目需求，允许必要的模块化例外
+-->
+<module name="Checker">
+  <property name="charset" value="UTF-8"/>
+  <property name="severity" value="warning"/>
+  <property name="fileExtensions" value="java, properties, xml"/>
+
+  <!-- 文件级别检查 -->
+  <module name="FileTabCharacter">
+    <property name="eachLine" value="true"/>
+  </module>
+  
+  <!-- 行长度检查 -->
+  <module name="LineLength">
+    <property name="fileExtensions" value="java"/>
+    <property name="max" value="120"/>
+    <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+  </module>
+
+  <!-- 新行符检查 -->
+  <module name="NewlineAtEndOfFile">
+    <property name="lineSeparator" value="lf"/>
+  </module>
+
+  <!-- TreeWalker 模块：语法树检查 -->
+  <module name="TreeWalker">
+    
+    <!-- 命名规范 -->
+    <module name="ConstantName"/>
+    <module name="LocalFinalVariableName"/>
+    <module name="LocalVariableName"/>
+    <module name="MemberName"/>
+    <module name="MethodName"/>
+    <module name="PackageName"/>
+    <module name="ParameterName"/>
+    <module name="StaticVariableName"/>
+    <module name="TypeName"/>
+
+    <!-- 导入检查 -->
+    <module name="AvoidStarImport"/>
+    <module name="IllegalImport"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="false"/>
+    </module>
+
+    <!-- 代码尺寸检查 -->
+    <module name="MethodLength">
+      <property name="tokens" value="METHOD_DEF"/>
+      <property name="max" value="150"/>
+    </module>
+    <module name="ParameterNumber">
+      <property name="max" value="7"/>
+      <property name="tokens" value="METHOD_DEF"/>
+    </module>
+
+    <!-- 空白符检查 -->
+    <module name="EmptyForIteratorPad"/>
+    <module name="GenericWhitespace"/>
+    <module name="MethodParamPad"/>
+    <module name="NoWhitespaceAfter"/>
+    <module name="NoWhitespaceBefore"/>
+    <module name="OperatorWrap"/>
+    <module name="ParenPad"/>
+    <module name="TypecastParenPad"/>
+    <module name="WhitespaceAfter"/>
+    <module name="WhitespaceAround"/>
+
+    <!-- 修饰符检查 -->
+    <module name="ModifierOrder"/>
+    <module name="RedundantModifier"/>
+
+    <!-- 块检查 -->
+    <module name="AvoidNestedBlocks"/>
+    <module name="EmptyBlock"/>
+    <module name="LeftCurly"/>
+    <module name="NeedBraces"/>
+    <module name="RightCurly"/>
+
+    <!-- 常见编码问题检查 -->
+    <module name="EmptyStatement"/>
+    <module name="EqualsHashCode"/>
+    <module name="HiddenField">
+      <property name="ignoreConstructorParameter" value="true"/>
+      <property name="ignoreSetter" value="true"/>
+    </module>
+    <module name="IllegalInstantiation"/>
+    <module name="InnerAssignment"/>
+    <module name="MagicNumber">
+      <property name="ignoreHashCodeMethod" value="true"/>
+      <property name="ignoreAnnotation" value="true"/>
+      <property name="ignoreFieldDeclaration" value="true"/>
+    </module>
+    <module name="MissingSwitchDefault"/>
+    <module name="SimplifyBooleanExpression"/>
+    <module name="SimplifyBooleanReturn"/>
+
+    <!-- 类设计检查 -->
+    <module name="DesignForExtension">
+      <property name="ignoredAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass"/>
+    </module>
+    <module name="FinalClass"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="InterfaceIsType"/>
+    <module name="VisibilityModifier">
+      <property name="protectedAllowed" value="true"/>
+    </module>
+
+    <!-- 杂项检查 -->
+    <module name="ArrayTypeStyle"/>
+    <module name="FinalParameters"/>
+    <module name="TodoComment">
+      <property name="severity" value="info"/>
+    </module>
+    <module name="UpperEll"/>
+
+    <!-- 注释检查 -->
+    <module name="JavadocMethod">
+      <property name="severity" value="info"/>
+      <property name="allowMissingParamTags" value="true"/>
+      <property name="allowMissingReturnTag" value="true"/>
+      <property name="allowedAnnotations" value="Override, Test"/>
+    </module>
+    <module name="JavadocType">
+      <property name="severity" value="info"/>
+    </module>
+    <module name="JavadocVariable">
+      <property name="severity" value="info"/>
+      <property name="scope" value="public"/>
+    </module>
+    <module name="JavadocStyle">
+      <property name="severity" value="info"/>
+    </module>
+
+    <!-- 阿里巴巴特殊规则 -->
+    <!-- 允许占位类的私有构造器不抛出异常 -->
+    <module name="IllegalCatch">
+      <property name="illegalClassNames" value="java.lang.Exception, java.lang.Throwable, java.lang.RuntimeException"/>
+    </module>
+    
+  </module>
+
+  <!-- 允许某些文件跳过检查 -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="module\-info\.java$"/>
+  </module>
+
+</module>
