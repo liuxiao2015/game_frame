@@ -12,7 +12,13 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 轻量级 JVM 指标上报器： - 周期性记录堆使用与线程数，便于初步观测. - 无第三方依赖，后续可替换为 Micrometer/Prometheus. */
+/**
+ * 轻量级 JVM 指标上报器。
+ * <ul>
+ *   <li>周期性记录堆使用与线程数，便于初步观测。</li>
+ *   <li>无第三方依赖，后续可替换为 Micrometer/Prometheus。</li>
+ * </ul>
+ */
 public final class MetricsReporter {
   private static final Logger log = LoggerFactory.getLogger(MetricsReporter.class);
 
