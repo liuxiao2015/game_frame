@@ -6,24 +6,26 @@ import java.util.logging.Logger;
 
 /**
  * SPI 组件框架演示启动器。
- * <p>
- * 此类演示如何使用组件管理器进行 SPI 自动装配和生命周期管理。程序启动时会自动加载所有 SPI 组件，按顺序初始化和启动，并在 JVM 退出时优雅停止。
- * </p>
  *
- * <p>演示流程：</p>
+ * <p>此类演示如何使用组件管理器进行 SPI 自动装配和生命周期管理。程序启动时会自动加载所有 SPI 组件，按顺序初始化和启动，并在 JVM 退出时优雅停止。
+ *
+ * <p>演示流程：
+ *
  * <ol>
- *   <li>创建组件管理器实例</li>
- *   <li>通过 SPI 加载所有组件</li>
- *   <li>初始化所有组件</li>
- *   <li>启动所有组件</li>
- *   <li>注册 JVM 关闭钩子，确保程序退出时优雅停止组件</li>
- *   <li>等待用户输入或程序结束</li>
+ *   <li>创建组件管理器实例
+ *   <li>通过 SPI 加载所有组件
+ *   <li>初始化所有组件
+ *   <li>启动所有组件
+ *   <li>注册 JVM 关闭钩子，确保程序退出时优雅停止组件
+ *   <li>等待用户输入或程序结束
  * </ol>
  *
- * <p>运行方式：</p>
+ * <p>运行方式：
+ *
  * <ul>
- *   <li>在 IDE 中直接运行 main 方法</li>
- *   <li>或者使用 Maven 命令：<code>mvn -q -DskipTests -pl launcher -am package</code>，然后在 IDE 中运行此类的 main 方法</li>
+ *   <li>在 IDE 中直接运行 main 方法
+ *   <li>或者使用 Maven 命令：<code>mvn -q -DskipTests -pl launcher -am package</code>，然后在 IDE 中运行此类的 main
+ *       方法
  * </ul>
  *
  * @author game-frame

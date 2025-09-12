@@ -3,13 +3,14 @@ package com.game.common.component;
 /**
  * 组件框架统一异常类。 用于封装组件初始化、启动、停止过程中发生的各种异常，提供统一的错误处理机制。
  *
- * <p>此异常类继承自 RuntimeException，支持以下使用场景：</p>
+ * <p>此异常类继承自 RuntimeException，支持以下使用场景：
+ *
  * <ul>
- *   <li>组件初始化失败</li>
- *   <li>组件启动异常</li>
- *   <li>组件停止错误</li>
- *   <li>SPI 加载失败</li>
- *   <li>组件依赖关系错误</li>
+ *   <li>组件初始化失败
+ *   <li>组件启动异常
+ *   <li>组件停止错误
+ *   <li>SPI 加载失败
+ *   <li>组件依赖关系错误
  * </ul>
  *
  * @author game-frame
