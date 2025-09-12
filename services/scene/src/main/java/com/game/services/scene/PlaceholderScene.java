@@ -6,7 +6,7 @@ package com.game.services.scene;
  * 当前仅用于保证工程编译通过。
  */
 public final class PlaceholderScene {
-    private PlaceholderScene() {
-        // 占位类不应被实例化。
-    }
+  private PlaceholderScene() {
+    // 占位类不应被实例化。
+  }
 }

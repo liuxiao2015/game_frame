@@ -6,7 +6,7 @@ package com.game.services.logic;
  * 当前仅用于保证工程编译通过。
  */
 public final class PlaceholderLogic {
-    private PlaceholderLogic() {
-        // 占位类不应被实例化。
-    }
+  private PlaceholderLogic() {
+    // 占位类不应被实例化。
+  }
 }

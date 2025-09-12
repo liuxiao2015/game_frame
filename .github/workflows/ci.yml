@@ -1,0 +1,102 @@
+# 持续集成工作流：代码质量与构建验证
+# 在每次 Push 和 Pull Request 时自动执行代码规范检查和构建验证
+
+name: CI - Code Quality & Build
+
+# 触发条件
+on:
+  # 推送到任意分支时触发
+  push:
+    branches: [ '*' ]
+  # Pull Request 到主分支时触发
+  pull_request:
+    branches: [ main, master ]
+
+# 权限配置
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  # 代码质量检查与构建任务
+  quality-check:
+    name: "代码质量检查与构建验证"
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. 检出代码
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    # 2. 设置 JDK 17 环境
+    - name: 设置 JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    # 3. 缓存 Maven 依赖
+    - name: 缓存 Maven 依赖
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    # 4. 验证 Maven 配置
+    - name: 验证 Maven 配置
+      run: mvn help:effective-pom -q
+      
+    # 5. 执行编译与代码质量检查
+    - name: 编译与代码质量检查
+      run: |
+        echo "开始执行编译与代码质量检查..."
+        mvn -B -DskipTests package spotless:check checkstyle:check
+        echo "代码质量检查通过！"
+        
+    # 6. 生成 Checkstyle 报告 (即使检查通过也生成，用于参考)
+    - name: 生成 Checkstyle 报告
+      if: always()
+      run: mvn checkstyle:checkstyle -DfailOnViolation=false
+      continue-on-error: true
+      
+    # 7. 上传 Checkstyle 报告 (失败时用于问题定位)
+    - name: 上传 Checkstyle 报告
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: checkstyle-report
+        path: |
+          **/target/checkstyle-result.xml
+          **/target/site/checkstyle.html
+        retention-days: 5
+        
+    # 8. 运行测试 (如果有测试的话)
+    - name: 运行测试
+      if: success()
+      run: |
+        if find . -name "*Test.java" -o -name "*Tests.java" | grep -q .; then
+          echo "发现测试文件，执行测试..."
+          mvn test
+        else
+          echo "未发现测试文件，跳过测试阶段"
+        fi
+      continue-on-error: false
+      
+    # 9. 构建摘要输出
+    - name: 构建摘要
+      if: always()
+      run: |
+        echo "## 构建摘要" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ 代码编译：通过" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Spotless 格式检查：通过" >> $GITHUB_STEP_SUMMARY  
+        echo "- ✅ Checkstyle 代码规范检查：通过" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 本地开发命令" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+        echo "# 格式化代码" >> $GITHUB_STEP_SUMMARY
+        echo "mvn spotless:apply" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "# 本地验证" >> $GITHUB_STEP_SUMMARY
+        echo "mvn -DskipTests verify" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

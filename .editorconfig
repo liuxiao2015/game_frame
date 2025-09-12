@@ -1,0 +1,61 @@
+# EditorConfig 配置文件
+# 统一代码编辑器格式化行为，支持 IntelliJ IDEA、Eclipse、VS Code 等
+# 参考: https://editorconfig.org/
+
+# 顶层配置文件
+root = true
+
+# 所有文件通用配置
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Java 源代码文件
+[*.java]
+indent_style = space
+indent_size = 2
+continuation_indent_size = 4
+max_line_length = 120
+
+# XML 配置文件 (POM、Spring 配置等)
+[*.xml]
+indent_style = space
+indent_size = 2
+
+# YAML 配置文件 (application.yml 等)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Properties 配置文件
+[*.properties]
+indent_style = space
+indent_size = 2
+
+# Markdown 文档
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+# JSON 文件
+[*.json]
+indent_style = space
+indent_size = 2
+
+# JavaScript/TypeScript (如有前端代码)
+[*.{js,ts}]
+indent_style = space
+indent_size = 2
+
+# Shell 脚本
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# Dockerfile
+[Dockerfile*]
+indent_style = space
+indent_size = 2

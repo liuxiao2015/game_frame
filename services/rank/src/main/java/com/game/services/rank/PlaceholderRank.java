@@ -6,7 +6,7 @@ package com.game.services.rank;
  * 当前仅用于保证工程编译通过。
  */
 public final class PlaceholderRank {
-    private PlaceholderRank() {
-        // 占位类不应被实例化。
-    }
+  private PlaceholderRank() {
+    // 占位类不应被实例化。
+  }
 }
