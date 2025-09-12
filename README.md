@@ -174,9 +174,93 @@ java -cp "launcher/target/classes:common/target/classes" com.game.launcher.Launc
 
 - **包命名规范**: 组件建议放在 `*.component` 包下，实现类放在 `*.component.impl` 包下
 - **异常处理**: 组件方法应抛出 `ComponentException`，提供清晰的错误信息
-- **日志记录**: 使用 JDK Logger，避免引入第三方日志框架
+- **日志记录**: 使用 SLF4J 统一日志门面，支持结构化日志和 traceId 追踪
 - **资源管理**: 确保在 `stop()` 方法中正确释放所有资源
 - **线程安全**: 组件应设计为线程安全，支持并发访问
+
+## 📊 日志与观测基础
+
+game-frame 提供了统一的日志门面和轻量级观测能力，支持结构化日志、分布式追踪和 JVM 指标监控。
+
+### 🔧 依赖说明
+
+框架采用 SLF4J 作为统一日志门面，默认使用 Logback 实现：
+
+- **SLF4J 2.0.13**: 统一日志接口，支持参数化日志和 MDC
+- **Logback 1.5.6**: 高性能日志实现，支持配置热加载
+
+### 📝 默认日志格式
+
+框架提供开箱即用的结构化日志配置 (`common/src/main/resources/logback.xml`)：
+
+```
+%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-}] %logger{36} - %msg%n
+```
+
+输出示例：
+```
+2025-09-12 02:35:48.757 [main] INFO  [b6518f83daa0489b] c.game.launcher.LauncherLoggingDemo - 程序启动
+2025-09-12 02:36:18.907 [metrics-reporter] INFO  [] c.g.c.observability.MetricsReporter - jvm.metrics heapUsedMB=9 heapCommittedMB=254 heapMaxMB=4000 threadCount=7
+```
+
+### 🏷️ TraceId 和 MDC 使用
+
+使用 `TraceContext` 工具类进行分布式追踪：
+
+```java
+// 生成新的 traceId
+String traceId = TraceContext.generateTraceId();
+
+// 放入 MDC，当前线程的所有日志都会包含此 traceId
+TraceContext.put(traceId);
+
+// 获取当前线程的 traceId
+String currentTraceId = TraceContext.get();
+
+// 清理 MDC，防止线程复用污染
+TraceContext.clear();
+```
+
+### 📈 JVM 指标监控
+
+使用 `MetricsReporter` 进行轻量级 JVM 监控：
+
+```java
+// 创建指标上报器（可配置采集周期）
+MetricsReporter reporter = new MetricsReporter(Duration.ofSeconds(30));
+
+// 启动定期采集
+reporter.start();
+
+// 应用关闭时停止采集
+reporter.stop();
+```
+
+**可配置项**：
+- 采集周期：默认 30 秒，最小 5 秒
+- 输出指标：堆内存使用/提交/最大值、线程数量
+
+### 🚀 使用演示
+
+运行日志与观测功能演示：
+
+```bash
+# 编译项目
+mvn -q -DskipTests -pl launcher -am package
+
+# 在 IDE 中运行 LauncherLoggingDemo.main() 方法
+# 或使用命令行：
+mvn dependency:copy-dependencies -pl launcher
+java -cp "launcher/target/classes:launcher/target/dependency/*" com.game.launcher.LauncherLoggingDemo
+```
+
+### 🔧 自定义配置
+
+项目可通过自定义 `logback.xml` 覆盖默认配置：
+
+1. 在具体模块的 `src/main/resources/` 下创建 `logback.xml`
+2. 参考 `common` 模块的默认配置进行定制
+3. 支持多种 Appender：Console、File、RollingFile、Async 等
 
 ## 📄 许可证
 
