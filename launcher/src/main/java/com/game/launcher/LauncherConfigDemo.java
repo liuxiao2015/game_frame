@@ -111,15 +111,9 @@ public final class LauncherConfigDemo {
       LOGGER.info("环境来源: 默认值 (dev)");
     }
 
-    // 通过强制转换获取当前环境
-    try {
-      PropertyResolver.ConfigImpl configImpl = (PropertyResolver.ConfigImpl) config;
-      String currentEnv = configImpl.getEnvironment();
-      LOGGER.info(String.format("当前环境: %s", currentEnv));
-    } catch (Exception e) {
-      // 强制转换失败时忽略，不影响主流程
-      LOGGER.info("当前环境: 无法获取");
-    }
+    // 通过接口方法获取当前环境
+    String currentEnv = config.getEnvironment();
+    LOGGER.info(String.format("当前环境: %s", currentEnv));
   }
 
   /**
