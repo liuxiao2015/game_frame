@@ -28,15 +28,15 @@ import org.slf4j.LoggerFactory;
  * <pre>{@code
  * // 创建会话
  * Session session = new Session(channel);
- * 
+ *
  * // 获取会话信息
  * String traceId = session.getTraceId();
  * String remoteAddress = session.getRemoteAddress();
- * 
+ *
  * // 存取属性
  * session.setAttribute("userId", "12345");
  * String userId = session.getAttribute("userId");
- * 
+ *
  * // 发送消息
  * CommandMessage response = CommandMessage.builder("echo")
  *     .param("msg", "hello")
@@ -82,9 +82,7 @@ public final class Session {
     LOGGER.debug("会话已创建 - 远程地址: {}, traceId: {}", getRemoteAddress(), getTraceId());
   }
 
-  /**
-   * 初始化 traceId。
-   */
+  /** 初始化 traceId。 */
   private void initializeTraceId() {
     String traceId = TraceContext.generateTraceId();
     setAttribute(ATTR_TRACE_ID, traceId);

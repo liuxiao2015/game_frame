@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * CommandDispatcher dispatcher = new CommandDispatcher(config);
  * dispatcher.registerHandler("echo", new EchoCommandHandler());
  * dispatcher.registerHandler("time", new TimeCommandHandler());
- * 
+ *
  * // 分发指令
  * CommandMessage request = CommandMessage.parse("echo msg=hello seq=1");
  * dispatcher.dispatch(request, session);
@@ -85,8 +85,11 @@ public final class CommandDispatcher {
     this.config = config;
     this.businessExecutor = createBusinessExecutor();
 
-    LOGGER.info("指令分发器已初始化 - 线程池配置: core={}, max={}, queue={}",
-        getThreadPoolCoreSize(), getThreadPoolMaxSize(), getThreadPoolQueueSize());
+    LOGGER.info(
+        "指令分发器已初始化 - 线程池配置: core={}, max={}, queue={}",
+        getThreadPoolCoreSize(),
+        getThreadPoolMaxSize(),
+        getThreadPoolQueueSize());
   }
 
   /**
@@ -110,12 +113,10 @@ public final class CommandDispatcher {
         new LinkedBlockingQueue<>(queueSize),
         threadFactory,
         new ThreadPoolExecutor.CallerRunsPolicy() // 队列满时在调用线程执行
-    );
+        );
   }
 
-  /**
-   * 获取线程池核心大小。
-   */
+  /** 获取线程池核心大小。 */
   private int getThreadPoolCoreSize() {
     try {
       return config.getInt("business.thread.core", DEFAULT_CORE_THREADS);
@@ -125,9 +126,7 @@ public final class CommandDispatcher {
     }
   }
 
-  /**
-   * 获取线程池最大大小。
-   */
+  /** 获取线程池最大大小。 */
   private int getThreadPoolMaxSize() {
     try {
       return config.getInt("business.thread.max", DEFAULT_MAX_THREADS);
@@ -137,9 +136,7 @@ public final class CommandDispatcher {
     }
   }
 
-  /**
-   * 获取线程池空闲时间。
-   */
+  /** 获取线程池空闲时间。 */
   private int getThreadPoolKeepAliveSeconds() {
     try {
       return config.getInt("business.thread.keepalive", DEFAULT_KEEPALIVE_SECONDS);
@@ -149,9 +146,7 @@ public final class CommandDispatcher {
     }
   }
 
-  /**
-   * 获取线程池队列大小。
-   */
+  /** 获取线程池队列大小。 */
   private int getThreadPoolQueueSize() {
     try {
       return config.getInt("business.thread.queue", DEFAULT_QUEUE_SIZE);
@@ -238,14 +233,14 @@ public final class CommandDispatcher {
     try {
       LOGGER.debug("开始处理指令: {}", command);
       handler.handle(request, session);
-      
+
       long duration = System.currentTimeMillis() - startTime;
       LOGGER.debug("指令处理完成: {}, 耗时: {}ms", command, duration);
 
     } catch (Exception e) {
       long duration = System.currentTimeMillis() - startTime;
       LOGGER.error("指令处理异常: {}, 耗时: {}ms", command, duration, e);
-      
+
       handleCommandError(request, session, e);
     }
   }
@@ -261,15 +256,16 @@ public final class CommandDispatcher {
     LOGGER.warn("收到未知指令: {}", command);
 
     try {
-      CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
-          .param("code", "UNKNOWN_COMMAND")
-          .param("message", "unknown_command_" + command);
-      
+      CommandMessage.Builder responseBuilder =
+          CommandMessage.builder("error")
+              .param("code", "UNKNOWN_COMMAND")
+              .param("message", "unknown_command_" + command);
+
       String seq = request.getSeq();
       if (seq != null) {
         responseBuilder.seq(seq);
       }
-      
+
       session.sendMessage(responseBuilder.build());
     } catch (Exception e) {
       LOGGER.error("发送错误响应失败", e);
@@ -285,15 +281,16 @@ public final class CommandDispatcher {
    */
   private void handleCommandError(CommandMessage request, Session session, Exception error) {
     try {
-      CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
-          .param("code", "COMMAND_ERROR")
-          .param("message", "execution_failed");
-      
+      CommandMessage.Builder responseBuilder =
+          CommandMessage.builder("error")
+              .param("code", "COMMAND_ERROR")
+              .param("message", "execution_failed");
+
       String seq = request.getSeq();
       if (seq != null) {
         responseBuilder.seq(seq);
       }
-      
+
       session.sendMessage(responseBuilder.build());
     } catch (Exception e) {
       LOGGER.error("发送错误响应失败", e);
@@ -319,12 +316,10 @@ public final class CommandDispatcher {
     return handlers.containsKey(command);
   }
 
-  /**
-   * 关闭分发器，释放资源。
-   */
+  /** 关闭分发器，释放资源。 */
   public void shutdown() {
     LOGGER.info("正在关闭指令分发器...");
-    
+
     businessExecutor.shutdown();
     try {
       if (!businessExecutor.awaitTermination(10, TimeUnit.SECONDS)) {

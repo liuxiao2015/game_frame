@@ -32,7 +32,7 @@ public final class TimeCommandHandler implements CommandHandler {
   private static final Logger LOGGER = LoggerFactory.getLogger(TimeCommandHandler.class);
 
   /** 日期时间格式化器 */
-  private static final DateTimeFormatter DATETIME_FORMATTER = 
+  private static final DateTimeFormatter DATETIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
   @Override
@@ -47,9 +47,10 @@ public final class TimeCommandHandler implements CommandHandler {
     String formattedDateTime = dateTime.format(DATETIME_FORMATTER);
 
     // 构建响应
-    CommandMessage.Builder responseBuilder = CommandMessage.builder("time")
-        .param("timestamp", String.valueOf(timestamp))
-        .param("datetime", formattedDateTime);
+    CommandMessage.Builder responseBuilder =
+        CommandMessage.builder("time")
+            .param("timestamp", String.valueOf(timestamp))
+            .param("datetime", formattedDateTime);
 
     if (seq != null) {
       responseBuilder.seq(seq);

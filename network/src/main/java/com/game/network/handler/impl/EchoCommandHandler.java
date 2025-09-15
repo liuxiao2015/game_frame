@@ -37,8 +37,7 @@ public final class EchoCommandHandler implements CommandHandler {
     LOGGER.info("处理 echo 指令 - 消息: {}, seq: {}", message, seq);
 
     // 构建响应
-    CommandMessage.Builder responseBuilder = CommandMessage.builder("echo")
-        .param("msg", message);
+    CommandMessage.Builder responseBuilder = CommandMessage.builder("echo").param("msg", message);
 
     if (seq != null) {
       responseBuilder.seq(seq);

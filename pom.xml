@@ -12,6 +12,7 @@
 
   <modules>
     <module>common</module>
+    <module>storage</module>
     <module>network</module>
     <module>services</module>
     <module>launcher</module>
@@ -24,6 +25,8 @@
     <slf4j.version>2.0.13</slf4j.version>
     <logback.version>1.5.6</logback.version>
     <netty.version>4.1.104.Final</netty.version>
+    <hikari.version>5.1.0</hikari.version>
+    <h2.version>2.3.232</h2.version>
   </properties>
 
   <build>

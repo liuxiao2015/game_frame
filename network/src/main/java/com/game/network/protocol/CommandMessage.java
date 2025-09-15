@@ -23,7 +23,7 @@ import java.util.Map;
  * <pre>{@code
  * // 解析行文本消息
  * CommandMessage cmd = CommandMessage.parse("echo msg=hello seq=1");
- * 
+ *
  * // 访问命令和参数
  * String command = cmd.getCommand(); // "echo"
  * String message = cmd.getParam("msg"); // "hello"
