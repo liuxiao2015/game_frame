@@ -21,6 +21,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!-- 依赖 storage 模块 -->
+    <dependency>
+      <groupId>com.game</groupId>
+      <artifactId>storage</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Netty 依赖 -->
     <dependency>
       <groupId>io.netty</groupId>
