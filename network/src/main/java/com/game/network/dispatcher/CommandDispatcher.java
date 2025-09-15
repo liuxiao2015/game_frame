@@ -261,13 +261,16 @@ public final class CommandDispatcher {
     LOGGER.warn("收到未知指令: {}", command);
 
     try {
-      CommandMessage response = CommandMessage.builder("error")
+      CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
           .param("code", "UNKNOWN_COMMAND")
-          .param("message", "未知指令: " + command)
-          .seq(request.getSeq())
-          .build();
+          .param("message", "unknown_command_" + command);
       
-      session.sendMessage(response);
+      String seq = request.getSeq();
+      if (seq != null) {
+        responseBuilder.seq(seq);
+      }
+      
+      session.sendMessage(responseBuilder.build());
     } catch (Exception e) {
       LOGGER.error("发送错误响应失败", e);
     }
@@ -282,13 +285,16 @@ public final class CommandDispatcher {
    */
   private void handleCommandError(CommandMessage request, Session session, Exception error) {
     try {
-      CommandMessage response = CommandMessage.builder("error")
+      CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
           .param("code", "COMMAND_ERROR")
-          .param("message", "指令执行失败: " + error.getMessage())
-          .seq(request.getSeq())
-          .build();
+          .param("message", "execution_failed");
       
-      session.sendMessage(response);
+      String seq = request.getSeq();
+      if (seq != null) {
+        responseBuilder.seq(seq);
+      }
+      
+      session.sendMessage(responseBuilder.build());
     } catch (Exception e) {
       LOGGER.error("发送错误响应失败", e);
     }

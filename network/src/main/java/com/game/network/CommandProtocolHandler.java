@@ -161,11 +161,12 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
       
       // 发送错误响应
       try {
-        CommandMessage errorResponse = CommandMessage.builder("error")
+        CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
             .param("code", "PARSE_ERROR")
-            .param("message", "指令格式错误: " + e.getMessage())
-            .build();
-        session.sendMessage(errorResponse);
+            .param("message", "invalid_format");
+        
+        // 注意：解析失败时无法获取seq，所以不添加seq参数
+        session.sendMessage(responseBuilder.build());
       } catch (Exception ex) {
         LOGGER.error("发送解析错误响应失败", ex);
       }
