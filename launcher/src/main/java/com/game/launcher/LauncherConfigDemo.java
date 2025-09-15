@@ -111,8 +111,8 @@ public final class LauncherConfigDemo {
       LOGGER.info("环境来源: 默认值 (dev)");
     }
 
-    // 通过接口方法获取当前环境
-    String currentEnv = config.getEnvironment();
+    // 通过配置获取当前环境
+    String currentEnv = config.getString("env", "dev");
     LOGGER.info(String.format("当前环境: %s", currentEnv));
   }
 
