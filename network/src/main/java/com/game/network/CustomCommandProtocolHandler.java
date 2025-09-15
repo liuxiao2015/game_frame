@@ -61,10 +61,7 @@ public final class CustomCommandProtocolHandler extends SimpleChannelInboundHand
     int clientPort = remoteAddress.getPort();
 
     LOGGER.info(
-        "客户端连接建立 - 地址: {}:{}, traceId: {}",
-        clientAddress,
-        clientPort,
-        session.getTraceId());
+        "客户端连接建立 - 地址: {}:{}, traceId: {}", clientAddress, clientPort, session.getTraceId());
 
     super.channelActive(ctx);
   }
@@ -106,8 +103,7 @@ public final class CustomCommandProtocolHandler extends SimpleChannelInboundHand
         return;
       }
 
-      LOGGER.debug(
-          "解析指令成功 - 指令: {}, 参数: {}", request.getCommand(), request.getParams());
+      LOGGER.debug("解析指令成功 - 指令: {}, 参数: {}", request.getCommand(), request.getParams());
 
       // 分发指令到处理器
       dispatcher.dispatch(request, session);
@@ -129,14 +125,14 @@ public final class CustomCommandProtocolHandler extends SimpleChannelInboundHand
 
       if (state == IdleState.READER_IDLE) {
         // 读空闲 - 客户端长时间未发送数据，断开连接
-        LOGGER.warn("客户端读空闲超时，断开连接 - traceId: {}", 
-            session != null ? session.getTraceId() : "unknown");
+        LOGGER.warn(
+            "客户端读空闲超时，断开连接 - traceId: {}", session != null ? session.getTraceId() : "unknown");
         ctx.close();
 
       } else if (state == IdleState.WRITER_IDLE) {
         // 写空闲 - 服务器长时间未发送数据，发送心跳
-        LOGGER.debug("服务器写空闲，发送心跳 - traceId: {}", 
-            session != null ? session.getTraceId() : "unknown");
+        LOGGER.debug(
+            "服务器写空闲，发送心跳 - traceId: {}", session != null ? session.getTraceId() : "unknown");
         ctx.writeAndFlush("ping\n");
       }
     }
