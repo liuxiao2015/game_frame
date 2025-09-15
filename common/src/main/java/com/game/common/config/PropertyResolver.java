@@ -296,7 +296,7 @@ public final class PropertyResolver {
   }
 
   /** 配置接口的内部实现类。 */
-  public static class ConfigImpl implements Config {
+  static class ConfigImpl implements Config {
 
     private final Properties properties;
     private final String environment;
