@@ -63,9 +63,7 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
   /** 会话对象 */
   private Session session;
 
-  /**
-   * 构造指令协议处理器。
-   */
+  /** 构造指令协议处理器。 */
   public CommandProtocolHandler() {
     // 加载配置并创建分发器
     try {
@@ -80,9 +78,7 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
     registerBuiltinHandlers();
   }
 
-  /**
-   * 注册内置指令处理器。
-   */
+  /** 注册内置指令处理器。 */
   private void registerBuiltinHandlers() {
     dispatcher.registerHandler("echo", new EchoCommandHandler());
     dispatcher.registerHandler("time", new TimeCommandHandler());
@@ -102,17 +98,18 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
     String clientAddress = remoteAddress.getAddress().getHostAddress();
     int clientPort = remoteAddress.getPort();
 
-    LOGGER.info("新连接建立 - 客户端地址: {}:{}, traceId: {}", 
-        clientAddress, clientPort, session.getTraceId());
+    LOGGER.info(
+        "新连接建立 - 客户端地址: {}:{}, traceId: {}", clientAddress, clientPort, session.getTraceId());
 
     // 发送欢迎消息
-    String welcomeMessage = String.format(
-        "欢迎连接到 Game Frame 指令服务器! (traceId: %s)\n"
-            + "支持的指令: echo, time, sum, ping\n"
-            + "协议格式: cmd [k=v]...\n"
-            + "示例: echo msg=hello seq=1\n"
-            + "输入 'quit' 或 'exit' 可断开连接。\n",
-        session.getTraceId());
+    String welcomeMessage =
+        String.format(
+            "欢迎连接到 Game Frame 指令服务器! (traceId: %s)\n"
+                + "支持的指令: echo, time, sum, ping\n"
+                + "协议格式: cmd [k=v]...\n"
+                + "示例: echo msg=hello seq=1\n"
+                + "输入 'quit' 或 'exit' 可断开连接。\n",
+            session.getTraceId());
 
     session.sendText(welcomeMessage);
 
@@ -122,8 +119,11 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
   @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     if (session != null) {
-      LOGGER.info("连接断开 - 远程地址: {}, traceId: {}, 存活时间: {}ms", 
-          session.getRemoteAddress(), session.getTraceId(), session.getUptime());
+      LOGGER.info(
+          "连接断开 - 远程地址: {}, traceId: {}, 存活时间: {}ms",
+          session.getRemoteAddress(),
+          session.getTraceId(),
+          session.getUptime());
     }
 
     super.channelInactive(ctx);
@@ -152,19 +152,20 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
 
       // 解析为指令消息
       CommandMessage command = CommandMessage.parse(trimmedMsg);
-      
+
       // 分发到对应处理器
       dispatcher.dispatch(command, session);
 
     } catch (IllegalArgumentException e) {
       LOGGER.warn("指令解析失败: {}, 错误: {}", msg, e.getMessage());
-      
+
       // 发送错误响应
       try {
-        CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
-            .param("code", "PARSE_ERROR")
-            .param("message", "invalid_format");
-        
+        CommandMessage.Builder responseBuilder =
+            CommandMessage.builder("error")
+                .param("code", "PARSE_ERROR")
+                .param("message", "invalid_format");
+
         // 注意：解析失败时无法获取seq，所以不添加seq参数
         session.sendMessage(responseBuilder.build());
       } catch (Exception ex) {
@@ -179,10 +180,10 @@ public final class CommandProtocolHandler extends SimpleChannelInboundHandler<St
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
     if (evt instanceof IdleStateEvent) {
       IdleStateEvent event = (IdleStateEvent) evt;
-      
+
       if (event.state() == IdleState.READER_IDLE) {
-        LOGGER.warn("客户端读空闲超时，关闭连接 - traceId: {}", 
-            session != null ? session.getTraceId() : "unknown");
+        LOGGER.warn(
+            "客户端读空闲超时，关闭连接 - traceId: {}", session != null ? session.getTraceId() : "unknown");
         ctx.close();
       } else if (event.state() == IdleState.WRITER_IDLE) {
         // 发送心跳

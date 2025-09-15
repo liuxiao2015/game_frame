@@ -55,10 +55,11 @@ public final class SumCommandHandler implements CommandHandler {
       long result = a + b;
 
       // 构建响应
-      CommandMessage.Builder responseBuilder = CommandMessage.builder("sum")
-          .param("a", aStr)
-          .param("b", bStr)
-          .param("result", String.valueOf(result));
+      CommandMessage.Builder responseBuilder =
+          CommandMessage.builder("sum")
+              .param("a", aStr)
+              .param("b", bStr)
+              .param("result", String.valueOf(result));
 
       if (seq != null) {
         responseBuilder.seq(seq);
@@ -86,10 +87,11 @@ public final class SumCommandHandler implements CommandHandler {
     try {
       // 将错误消息转换为无空格格式
       String errorMessage = message.replaceAll("\\s+", "_").toLowerCase();
-      
-      CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
-          .param("code", "INVALID_PARAMETER")
-          .param("message", errorMessage);
+
+      CommandMessage.Builder responseBuilder =
+          CommandMessage.builder("error")
+              .param("code", "INVALID_PARAMETER")
+              .param("message", errorMessage);
 
       if (seq != null) {
         responseBuilder.seq(seq);

@@ -35,7 +35,7 @@
  * time seq=2
  * sum a=10 b=20 seq=3
  * ping seq=4
- * 
+ *
  * # 接收响应
  * echo msg=hello seq=1
  * time timestamp=1703123456789 datetime=2023-12-20T15:30:56 seq=2

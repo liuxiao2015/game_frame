@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * <pre>{@code
  * # 连接服务器
  * telnet localhost 7001
- * 
+ *
  * # 测试指令
  * echo msg=hello seq=1
  * time seq=2
