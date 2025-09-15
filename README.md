@@ -380,6 +380,129 @@ java -cp "launcher/target/classes:launcher/target/dependency/*" com.game.launche
 2. 参考 `common` 模块的默认配置进行定制
 3. 支持多种 Appender：Console、File、RollingFile、Async 等
 
+## 📦 协议指令对接存储（PR-09）
+
+game-frame 提供了协议指令与存储抽象的完整集成，支持玩家数据的持久化操作。
+
+### 🌟 核心功能
+
+- **指令路由集成**：基于 PR-07 的指令协议框架，支持 echo、time、sum、ping 等基础指令
+- **存储抽象集成**：基于 PR-08 的存储框架，支持 H2 内存数据库和 MySQL 数据库
+- **玩家数据管理**：新增 player-save、player-get 指令，支持玩家信息的保存和查询
+- **依赖注入**：通过构造函数注入 PlayerRepository，实现存储层解耦
+- **优雅关闭**：支持数据源和 Netty 服务器的优雅关闭
+
+### 🎯 支持的指令
+
+#### 基础指令
+- `echo msg=<message> [seq=<seq>]` - 回显消息
+- `time [seq=<seq>]` - 获取服务器时间  
+- `sum a=<num1> b=<num2> [seq=<seq>]` - 计算两数之和
+- `ping [seq=<seq>]` - 心跳检测
+
+#### 玩家指令
+- `player-save name=<name> level=<level> [seq=<seq>]` - 保存玩家信息
+- `player-get id=<id> [seq=<seq>]` - 查询玩家信息
+
+### 🚀 运行演示
+
+#### 编译和启动
+```bash
+# 编译项目
+mvn -q -DskipTests -pl launcher -am package
+
+# 在 IDE 中运行 LauncherProtocolWithStorageDemo.main() 方法
+# 启动后服务器将监听 7001 端口
+```
+
+#### 测试指令
+
+使用 telnet 或 nc 连接服务器进行测试：
+
+```bash
+# 连接服务器
+telnet localhost 7001
+
+# 测试基础指令
+echo msg=hello seq=1
+time seq=2
+sum a=10 b=20 seq=3
+ping seq=4
+
+# 测试玩家指令
+player-save name=Alice level=3 seq=5
+# 响应: ok id=1 name=Alice level=3 seq=5
+
+player-get id=1 seq=6  
+# 响应: ok id=1 name=Alice level=3 seq=6
+
+player-get id=999 seq=7
+# 响应: not_found id=999 seq=7
+```
+
+### 🔄 MySQL 数据库切换
+
+默认使用 H2 内存数据库，支持切换到 MySQL：
+
+#### 1. 添加 MySQL 驱动依赖
+
+在父项目或相关模块的 `pom.xml` 中添加：
+
+```xml
+<dependency>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-j</artifactId>
+  <version>8.2.0</version>
+</dependency>
+```
+
+#### 2. 修改数据库配置
+
+在 `common/src/main/resources/config/application-prod.properties` 中配置：
+
+```properties
+# MySQL 数据库配置
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/game?useSSL=false&serverTimezone=UTC
+db.username=your_username
+db.password=your_password
+
+# 连接池配置（可选）
+db.pool.size=10
+```
+
+#### 3. 启动 MySQL 环境
+
+```bash
+# 使用生产环境配置启动
+java -Denv=prod -cp "launcher/target/classes:launcher/target/dependency/*" \
+  com.game.launcher.LauncherProtocolWithStorageDemo
+```
+
+### 📋 错误处理
+
+系统提供统一的错误处理机制：
+
+- **参数缺失**：`err msg=name parameter is required`
+- **类型错误**：`err msg=level must be a valid integer`  
+- **数据库异常**：`err msg=internal_server_error`
+- **玩家不存在**：`not_found id=<id>`
+
+### 🏗️ 架构设计
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Client        │    │   Network        │    │   Storage       │
+│   (telnet/nc)   │───▶│   - Command      │───▶│   - Repository  │
+│                 │    │     Dispatcher   │    │   - JDBC        │
+│                 │    │   - Handlers     │    │   - DataSource  │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+```
+
+- **Network 层**：负责协议解析、指令路由、会话管理
+- **Storage 层**：负责数据访问、事务管理、连接池管理
+- **依赖注入**：通过构造函数注入实现层间解耦
+
 ## 📄 许可证
 
 本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
