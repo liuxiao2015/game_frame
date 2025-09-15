@@ -70,13 +70,131 @@ mvn -DskipTests verify
 本仓库将逐步通过以下 PR 完善：
 - ✅ **PR-02**: 代码规范与 CI 门禁 (Checkstyle、Spotless)
 - ✅ **PR-03**: SPI 可插拔组件框架
-- ⏳ **PR-04**: 日志与观测基础设施
-- ⏳ **PR-05**: 协议层 (Protobuf) 与消息封装
-- ⏳ **PR-06**: Netty 网关最小可运行版本
-- ⏳ **PR-07**: 数据层抽象与缓存集成
-- ⏳ **PR-08**: 微服务注册发现与配置中心
-- ⏳ **PR-09**: 监控指标与健康检查
-- ⏳ **PR-10**: 部署脚本与容器化支持
+- ✅ **PR-04**: 日志与观测基础设施
+- ✅ **PR-05**: 配置中心与环境分层
+- ⏳ **PR-06**: 协议层 (Protobuf) 与消息封装
+- ⏳ **PR-07**: Netty 网关最小可运行版本
+- ⏳ **PR-08**: 数据层抽象与缓存集成
+- ⏳ **PR-09**: 微服务注册发现与扩展
+- ⏳ **PR-10**: 监控指标与健康检查
+- ⏳ **PR-11**: 部署脚本与容器化支持
+
+## 🔧 配置中心与环境分层
+
+game-frame 提供了轻量级的配置中心能力，支持多环境分层加载与覆盖，满足开发、测试、生产等不同环境的配置需求。
+
+### 🌟 核心特性
+
+- **多环境支持**: 支持 dev/test/prod 三种标准环境，默认为 dev
+- **分层覆盖**: 配置按优先级覆盖，确保灵活性和安全性
+- **环境变量映射**: 支持通过环境变量覆盖配置，便于容器化部署
+- **占位符解析**: 支持 `${key:default}` 语法的配置引用
+- **零依赖实现**: 仅使用 JDK 标准能力，无需引入第三方库
+
+### 🎯 环境选择方式
+
+环境选择按以下优先级顺序：
+
+1. **JVM 系统属性**（最高优先级）
+   ```bash
+   java -Denv=prod YourApp
+   ```
+
+2. **环境变量**
+   ```bash
+   export GAME_ENV=prod
+   java YourApp
+   ```
+
+3. **默认环境**：dev
+
+### 📁 配置文件约定
+
+配置文件统一放置在 `common/src/main/resources/config/` 目录下：
+
+```
+common/src/main/resources/config/
+├── application.properties        # 默认配置（所有环境共享）
+├── application-dev.properties    # 开发环境配置
+├── application-test.properties   # 测试环境配置
+└── application-prod.properties   # 生产环境配置
+```
+
+### 🔄 配置覆盖顺序
+
+配置值按以下优先级覆盖（数字越大优先级越高）：
+
+```
+1. 默认配置文件 (application.properties)
+   ↓
+2. 环境配置文件 (application-{env}.properties)
+   ↓  
+3. JVM 系统属性 (-Dkey=value)
+   ↓
+4. 环境变量 (GAME_*)  ← 最高优先级
+```
+
+### 🌍 环境变量映射规则
+
+环境变量到配置键的映射规则：
+
+1. 必须以 `GAME_` 开头
+2. 移除前缀后转换为小写
+3. 下划线 `_` 转换为点号 `.`
+
+**映射示例**：
+```bash
+GAME_SERVER_PORT=9000        → server.port=9000
+GAME_DATABASE_URL=xxx        → database.url=xxx
+GAME_LOGGING_LEVEL_ROOT=WARN → logging.level.root=WARN
+```
+
+### 💻 使用示例
+
+#### 基本用法
+
+```java
+import com.game.common.config.Config;
+import com.game.common.config.PropertyResolver;
+
+// 加载当前环境配置（自动检测环境）
+Config config = PropertyResolver.load();
+
+// 加载指定环境配置
+Config config = PropertyResolver.load("prod");
+
+// 读取配置值
+String appName = config.getString("app.name");
+int serverPort = config.getInt("server.port", 8080);
+boolean debugEnabled = config.getBoolean("debug.enabled", false);
+```
+
+#### 运行演示
+
+```bash
+# 编译项目
+mvn -q -DskipTests package
+
+# 默认环境运行（dev）
+java -cp "launcher/target/classes:common/target/classes" com.game.launcher.LauncherConfigDemo
+
+# 指定生产环境
+java -Denv=prod -cp "launcher/target/classes:common/target/classes" com.game.launcher.LauncherConfigDemo
+
+# 环境变量覆盖端口
+GAME_SERVER_PORT=9000 java -cp "launcher/target/classes:common/target/classes" com.game.launcher.LauncherConfigDemo
+```
+
+### 🚀 后续扩展建议
+
+当前实现保留了良好的扩展空间，未来可以考虑：
+
+- **YAML/TOML 支持**: 扩展支持更现代的配置格式
+- **集中式配置**: 集成 Nacos、Consul 等配置中心
+- **热加载机制**: 支持配置文件变更时自动重载
+- **配置加密**: 敏感配置的加密存储和解密
+- **配置验证**: 配置项的类型和取值范围验证
+- **多数据源**: 支持数据库、远程 HTTP 等配置源
 
 ## 🔌 SPI 组件开发指南
 
