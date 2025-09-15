@@ -85,11 +85,11 @@ public final class SumCommandHandler implements CommandHandler {
   private void sendErrorResponse(Session session, String seq, String message) {
     try {
       // 将错误消息转换为无空格格式
-      String errorCode = message.replaceAll("\\s+", "_").toLowerCase();
+      String errorMessage = message.replaceAll("\\s+", "_").toLowerCase();
       
       CommandMessage.Builder responseBuilder = CommandMessage.builder("error")
           .param("code", "INVALID_PARAMETER")
-          .param("message", errorCode);
+          .param("message", errorMessage);
 
       if (seq != null) {
         responseBuilder.seq(seq);
