@@ -211,8 +211,7 @@ public final class PropertyResolver {
         || key.startsWith("os.")
         || key.startsWith("user.")
         || key.startsWith("file.")
-        || key.startsWith("line.")
-        || key.equals("env"); // 排除我们的环境选择属性
+        || key.startsWith("line.");
   }
 
   /**
